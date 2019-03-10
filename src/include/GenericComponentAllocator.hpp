@@ -9,7 +9,7 @@
 #include <AllocationSystem.hpp>
 
 namespace puggo {
-    template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
+    template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
     class GenericComponentAllocator {
     public:
         GenericComponentAllocator(const GenericComponentAllocator&) = delete;
@@ -18,19 +18,18 @@ namespace puggo {
         static void init(const uint32_t& genericComponentLimit = static_cast<uint32_t>(pow(2, IndexSize)));
         static void deallocate(void);
 
-        static Handle create(Args&&... args);
+        static Handle create(void);
         static T& get(const Handle& handle);
         static void destroy(const Handle& handle);
         static bool isInitialized(void);
         static bool isValidHandle(const Handle& handle);
 
     private:
-        GenericComponentAllocator(void) noexcept;
-        GenericComponentAllocator(const uint32_t& genericComponentLimit = static_cast<uint32_t>(pow(2, IndexSize)));
+        GenericComponentAllocator(const uint32_t& genericComponentLimit);
         GenericComponentAllocator(GenericComponentAllocator&& componentAllocator) noexcept;
 
         GenericComponentAllocator& operator=(GenericComponentAllocator&& componentAllocator) noexcept;
-        Handle createInternal(Args&&... args);
+        Handle createInternal(void);
         T& getInternal(const Handle& handle);
         void destroyInternal(const Handle& handle);
         bool isInitializedInternal(void);
@@ -46,7 +45,7 @@ namespace puggo {
         uint32_t* generation = nullptr;
         T* objects = nullptr;
 
-        static GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...> componentAllocator;
+        static GenericComponentAllocator<T, IndexSize, GenerationSize, Handle> componentAllocator;
     };
 }
 

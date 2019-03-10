@@ -27,9 +27,9 @@ T* puggo::allocateArray(Allocator& allocator, size_t length) {
     T* p = ((T*)allocator.allocate(sizeof(T) * (length + headerSize), alignof(T))) + headerSize;
     *(((size_t*)p) - 1) = length;
 
-    for (size_t i = 0; i < length; i++) {
+    /*for (size_t i = 0; i < length; i++) {
         new (&p) T;
-    }
+    }*/
 
     return p;
 }

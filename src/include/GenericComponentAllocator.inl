@@ -1,31 +1,37 @@
 using namespace puggo;
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::GenericComponentAllocator(void) noexcept {}
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+GenericComponentAllocator<T, IndexSize, GenerationSize, Handle> GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::componentAllocator(0);
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::GenericComponentAllocator(const uint32_t& genericComponentLimit) {
-    assert(genericComponentLimit <= static_cast<uint32_t>(pow(2, IndexSize)));
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::GenericComponentAllocator(const uint32_t& genericComponentLimit) {
+    if (genericComponentLimit > 0) {
+        cout << "genericComponentLimit: " << genericComponentLimit << endl;
+        assert(genericComponentLimit <= static_cast<uint32_t>(pow(2, IndexSize)));
 
-    uint32_t size = (genericComponentLimit + 1) * (sizeof(uint32_t) + sizeof(T));
-    allocatedMemory = AllocationSystem::requestMemoryFromSystem(size);
-    LinearAllocator allocator(size, data);
+        uint32_t size = (genericComponentLimit + 4) * (sizeof(uint32_t) + sizeof(T));
+        allocatedMemory = AllocationSystem::requestMemoryFromSystem(size);
+        LinearAllocator allocator(size, allocatedMemory);
 
-    this->genericComponentLimit = genericComponentLimit;
-    generation = allocateArray<uint32_t>(allocator, size);
-    transform = allocateArray<T, Args...>(allocator, size);
+        this->genericComponentLimit = genericComponentLimit;
+        generation = allocateArray<uint32_t>(allocator, genericComponentLimit);
+        objects = allocateArray<T>(allocator, genericComponentLimit);
+        allocator.clear();
 
-    if (this->genericComponentLimit < minimumFreeIndices) {
-        minimumFreeIndices = static_cast<uint32_t>(this->genericComponentLimit * 0.25);
+        if (this->genericComponentLimit < minimumFreeIndices) {
+            minimumFreeIndices = static_cast<uint32_t>(this->genericComponentLimit * 0.25);
+        }
+
+        freeIndices = deque<uint32_t>(minimumFreeIndices);
+        freeIndices.clear();
+        cout << "Leaving scope" << endl;
     }
-
-    freeIndices = deque<uint32_t>(minimumFreeIndices);
-    freeIndices.clear();
+    cout << "Exiting constructor" << endl;
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::GenericComponentAllocator(GenericComponentAllocator&& componentAllocator) noexcept {
-    allocator = move(componentAllocator.allocator);
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::GenericComponentAllocator(GenericComponentAllocator&& componentAllocator) noexcept {
+    allocatedMemory = move(componentAllocator.allocatedMemory);
     freeIndices = move(componentAllocator.freeIndices);
     genericComponentLimit = componentAllocator.genericComponentLimit;
     minimumFreeIndices = componentAllocator.minimumFreeIndices;
@@ -34,9 +40,9 @@ GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::Generi
     objects = move(componentAllocator.objects);
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::operator=(GenericComponentAllocator&& transformAllocator) noexcept {
-    allocator = move(componentAllocator.allocator);
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::operator=(GenericComponentAllocator&& transformAllocator) noexcept {
+    allocatedMemory = move(componentAllocator.allocatedMemory);
     freeIndices = move(componentAllocator.freeIndices);
     genericComponentLimit = componentAllocator.genericComponentLimit;
     minimumFreeIndices = componentAllocator.minimumFreeIndices;
@@ -47,44 +53,44 @@ GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>& Generi
     return *this;
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::init(const uint32_t& genericComponentLimit) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::init(const uint32_t& genericComponentLimit) {
     GenericComponentAllocator::deallocate();
-    GenericComponentAllocator::componentAllocator = GenericComponentAllocator<T, Args...>(genericComponentLimit);
+    GenericComponentAllocator::componentAllocator = GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>(genericComponentLimit);
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::deallocate(void) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::deallocate(void) {
     GenericComponentAllocator::componentAllocator.freeMemory();
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-Handle GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::create(Args&&... args) {
-    return GenericComponentAllocator::componentAllocator.createInternal(forward<Args>(args)...);
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+Handle GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::create(void) {
+    return GenericComponentAllocator::componentAllocator.createInternal();
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-T& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::get(const Handle& handle) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+T& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::get(const Handle& handle) {
     return GenericComponentAllocator::componentAllocator.getInternal(handle);
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::destroy(const Handle& handle) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::destroy(const Handle& handle) {
     GenericComponentAllocator::componentAllocator.destroyInternal(handle);
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::isInitialized(void) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::isInitialized(void) {
     return GenericComponentAllocator::componentAllocator.isInitializedInternal();
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::isValidHandle(const Handle& handle) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::isValidHandle(const Handle& handle) {
     return GenericComponentAllocator::componentAllocator.isValidHandleInternal(handle);
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-Handle GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::createInternal(Args&&... args) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+Handle GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::createInternal(void) {
     uint32_t idx;
     if (freeIndices.size() >= minimumFreeIndices) {
         idx = freeIndices.front();
@@ -96,7 +102,7 @@ Handle GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>:
         generation[idx] = 0;
     }
 
-    objects[idx] = T(forward<Args>(args)...);
+    objects[idx] = T();
 
     return {
         idx,
@@ -104,37 +110,38 @@ Handle GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>:
     };
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-T& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::getInternal(const Handle& handle) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+T& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::getInternal(const Handle& handle) {
     assert(isValidHandleInternal(handle));
     return objects[handle.index];
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::destroyInternal(const Handle& handle) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::destroyInternal(const Handle& handle) {
     assert(isValidHandleInternal(handle));
 
     ++generation[handle.index];
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::isInitializedInternal(void) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::isInitializedInternal(void) {
     return componentAllocator.allocatedMemory != nullptr;
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::freeMemory(void) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::freeMemory(void) {
+    cout << "freeMemory" << endl;
     if (componentAllocator.allocatedMemory != nullptr) {
         generationSize = 0;
         freeIndices.clear();
 
         allocatedMemory = nullptr;
         generation = nullptr;
-        transform = nullptr;
+        objects = nullptr;
     }
 }
 
-template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle, typename... Args>
-bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle, Args...>::isValidHandleInternal(const Handle& handle) {
+template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
+bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::isValidHandleInternal(const Handle& handle) {
     return generation[handle.index] == handle.generation;
 }
