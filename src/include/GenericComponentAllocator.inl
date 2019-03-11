@@ -6,7 +6,6 @@ GenericComponentAllocator<T, IndexSize, GenerationSize, Handle> GenericComponent
 template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
 GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::GenericComponentAllocator(const uint32_t& genericComponentLimit) {
     if (genericComponentLimit > 0) {
-        cout << "genericComponentLimit: " << genericComponentLimit << endl;
         assert(genericComponentLimit <= static_cast<uint32_t>(pow(2, IndexSize)));
 
         uint32_t size = (genericComponentLimit + 4) * (sizeof(uint32_t) + sizeof(T));
@@ -24,9 +23,7 @@ GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::GenericComponen
 
         freeIndices = deque<uint32_t>(minimumFreeIndices);
         freeIndices.clear();
-        cout << "Leaving scope" << endl;
     }
-    cout << "Exiting constructor" << endl;
 }
 
 template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
@@ -38,10 +35,14 @@ GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::GenericComponen
     generationSize = componentAllocator.generationSize;
     generation = move(componentAllocator.generation);
     objects = move(componentAllocator.objects);
+
+    componentAllocator.allocatedMemory = nullptr;
+    componentAllocator.generation = nullptr;
+    componentAllocator.objects = nullptr;
 }
 
 template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
-GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::operator=(GenericComponentAllocator&& transformAllocator) noexcept {
+GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>& GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::operator=(GenericComponentAllocator&& componentAllocator) noexcept {
     allocatedMemory = move(componentAllocator.allocatedMemory);
     freeIndices = move(componentAllocator.freeIndices);
     genericComponentLimit = componentAllocator.genericComponentLimit;
@@ -49,6 +50,10 @@ GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>& GenericComponen
     generationSize = componentAllocator.generationSize;
     generation = move(componentAllocator.generation);
     objects = move(componentAllocator.objects);
+
+    componentAllocator.allocatedMemory = nullptr;
+    componentAllocator.generation = nullptr;
+    componentAllocator.objects = nullptr;
 
     return *this;
 }
@@ -130,7 +135,6 @@ bool GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::isInitiali
 
 template <typename T, uint8_t IndexSize, uint8_t GenerationSize, typename Handle>
 void GenericComponentAllocator<T, IndexSize, GenerationSize, Handle>::freeMemory(void) {
-    cout << "freeMemory" << endl;
     if (componentAllocator.allocatedMemory != nullptr) {
         generationSize = 0;
         freeIndices.clear();

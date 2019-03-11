@@ -27,10 +27,6 @@ T* puggo::allocateArray(Allocator& allocator, size_t length) {
     T* p = ((T*)allocator.allocate(sizeof(T) * (length + headerSize), alignof(T))) + headerSize;
     *(((size_t*)p) - 1) = length;
 
-    /*for (size_t i = 0; i < length; i++) {
-        new (&p) T;
-    }*/
-
     return p;
 }
 
@@ -38,10 +34,6 @@ template <typename T>
 void puggo::deallocateArray(Allocator& allocator, T* array) {
     assert(array != nullptr);
     size_t length = *(((size_t*)array) - 1);
-
-    /*for (size_t i = 0; i < length; i++) {
-        array.~T();
-    }*/
 
     // Calculate how much extra memory was allocated to store the length before the array
     unsigned char headerSize = sizeof(size_t) / sizeof(T);

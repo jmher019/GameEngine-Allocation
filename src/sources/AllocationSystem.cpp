@@ -11,13 +11,9 @@ AllocationSystem::AllocationSystem(unsigned long long size, size_t sizePerAlloca
 }
 
 AllocationSystem::~AllocationSystem(void) {
-    cout << "~AllocationSystem" << endl;
     freeAllMemory();
 }
 void AllocationSystem::initMemory(unsigned long long size, size_t sizePerAllocator) {
-    cout << "initMemory" << endl;
-    cout << "size: " << size << endl;
-    cout << "sizePerAllocator: " << sizePerAllocator << endl;
 #ifdef _WIN64
     assert(size <= (SIXTEEN_GIGABYTE * 2));
 #else
@@ -25,24 +21,14 @@ void AllocationSystem::initMemory(unsigned long long size, size_t sizePerAllocat
 #endif // _WIN32
 
     size_t numAllocators = static_cast<size_t>(ceil(static_cast<float>(size) / static_cast<float>(sizePerAllocator)));
-    cout << "numAllocators: " << numAllocators << endl;
+
     for (size_t i = 0; i < numAllocators - 1; i++) {
-        cout << "malloc call" << endl;
-        void* data = malloc(sizePerAllocator);
-        cout << "data: " << data << endl;
-        dataArr.push_back(data);
-        cout << "data pushed back" << endl;
-        masterAllocators.push_back(LinearAllocator(sizePerAllocator, data));
-        cout << "Linear allocator pushed back" << endl;
+        dataArr.push_back(malloc(sizePerAllocator));
+        masterAllocators.push_back(LinearAllocator(sizePerAllocator, dataArr.back()));
     }
 
-    cout << "malloc call" << endl;
-    void* lastData = malloc(static_cast<size_t>(size - (numAllocators - 1) * static_cast<unsigned long long>(sizePerAllocator)));
-    cout << "lastData: " << lastData << endl;
-    dataArr.push_back(lastData);
-    cout << "lastData pushed back" << endl;
-    masterAllocators.push_back(LinearAllocator(static_cast<size_t>(size - (numAllocators - 1) * static_cast<unsigned long long>(sizePerAllocator)), lastData));
-    cout << "initMemory::succeeded" << endl;
+    dataArr.push_back(malloc(static_cast<size_t>(size - (numAllocators - 1) * static_cast<unsigned long long>(sizePerAllocator))));
+    masterAllocators.push_back(LinearAllocator(static_cast<size_t>(size - (numAllocators - 1) * static_cast<unsigned long long>(sizePerAllocator)), dataArr.back()));
 }
 
 AllocationSystem& AllocationSystem::operator=(AllocationSystem&& system) noexcept {
@@ -81,10 +67,8 @@ void* AllocationSystem::requestMemory(size_t size) {
 }
 
 void AllocationSystem::freeAllMemory(void) {
-    cout << "freeAllMemory" << endl;
     for_each(masterAllocators.begin(), masterAllocators.end(), [](LinearAllocator& allocator) { allocator.clear(); });
     for_each(dataArr.begin(), dataArr.end(), [](void* data) { free(data); });
     masterAllocators.clear();
     dataArr.clear();
-    cout << "cleared" << endl;
 }
