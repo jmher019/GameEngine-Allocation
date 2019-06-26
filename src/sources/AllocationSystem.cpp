@@ -2,6 +2,8 @@
 
 using namespace puggo;
 
+AllocationSystem AllocationSystem::system;
+
 AllocationSystem::AllocationSystem(void) {}
 
 AllocationSystem::AllocationSystem(unsigned long long size, size_t sizePerAllocator) {
@@ -9,7 +11,6 @@ AllocationSystem::AllocationSystem(unsigned long long size, size_t sizePerAlloca
 }
 
 AllocationSystem::~AllocationSystem(void) {
-
     freeAllMemory();
 }
 void AllocationSystem::initMemory(unsigned long long size, size_t sizePerAllocator) {
@@ -20,6 +21,7 @@ void AllocationSystem::initMemory(unsigned long long size, size_t sizePerAllocat
 #endif // _WIN32
 
     size_t numAllocators = static_cast<size_t>(ceil(static_cast<float>(size) / static_cast<float>(sizePerAllocator)));
+
     for (size_t i = 0; i < numAllocators - 1; i++) {
         dataArr.push_back(malloc(sizePerAllocator));
         masterAllocators.push_back(LinearAllocator(sizePerAllocator, dataArr.back()));
@@ -67,5 +69,6 @@ void* AllocationSystem::requestMemory(size_t size) {
 void AllocationSystem::freeAllMemory(void) {
     for_each(masterAllocators.begin(), masterAllocators.end(), [](LinearAllocator& allocator) { allocator.clear(); });
     for_each(dataArr.begin(), dataArr.end(), [](void* data) { free(data); });
+    masterAllocators.clear();
     dataArr.clear();
 }

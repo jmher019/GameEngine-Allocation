@@ -22,32 +22,32 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C7B423BB-982C-4571-84F9-E47E66F0C2EE}</ProjectGuid>
     <RootNamespace>Allocation</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -79,7 +79,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\Debug\* $(ProjectDir)..\dist\lib\x86\Debug</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x86
+mkdir $(ProjectDir)..\dist\lib\x86\Debug
+copy $(ProjectDir)..\Debug\* $(ProjectDir)..\dist\lib\x86\Debug</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -91,7 +95,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\x64\Debug\* $(ProjectDir)..\dist\lib\x64\Debug</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x64
+mkdir $(ProjectDir)..\dist\lib\x64\Debug
+copy $(ProjectDir)..\x64\Debug\* $(ProjectDir)..\dist\lib\x64\Debug</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,7 +117,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\Release\* $(ProjectDir)..\dist\lib\x86\Release</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x86
+mkdir $(ProjectDir)..\dist\lib\x86\Release
+copy $(ProjectDir)..\Release\* $(ProjectDir)..\dist\lib\x86\Release</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,22 +139,20 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\x64\Release\* $(ProjectDir)..\dist\lib\x64\Release</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x64
+mkdir $(ProjectDir)..\dist\lib\x64\Release
+copy $(ProjectDir)..\x64\Release\* $(ProjectDir)..\dist\lib\x64\Release</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\AllocationSystem.hpp" />
     <ClInclude Include="..\src\include\Allocator.hpp" />
     <ClInclude Include="..\src\include\FreeListAllocator.hpp" />
-    <ClInclude Include="..\src\include\GenericComponentAllocator.hpp" />
-    <ClInclude Include="..\src\include\GenericHandle.hpp" />
-    <ClInclude Include="..\src\include\ISystem.hpp" />
     <ClInclude Include="..\src\include\LinearAllocator.hpp" />
-    <ClInclude Include="..\src\include\IRenderManager.hpp" />
     <ClInclude Include="..\src\include\PoolAllocator.hpp" />
     <ClInclude Include="..\src\include\ProxyAllocator.hpp" />
-    <ClInclude Include="..\src\include\RenderManager.hpp" />
-    <ClInclude Include="..\src\include\RenderSystem.hpp" />
     <ClInclude Include="..\src\include\StackAllocator.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,13 +163,7 @@
     <ClCompile Include="..\src\sources\main.cpp" />
     <ClCompile Include="..\src\sources\PoolAllocator.cpp" />
     <ClCompile Include="..\src\sources\ProxyAllocator.cpp" />
-    <ClCompile Include="..\src\sources\RenderSystem.cpp" />
     <ClCompile Include="..\src\sources\StackAllocator.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\include\Allocator.inl" />
-    <None Include="..\src\include\GenericComponentAllocator.inl" />
-    <None Include="..\src\include\RenderManager.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,8 +6,6 @@
 #include <PoolAllocator.hpp>
 #include <ProxyAllocator.hpp>
 #include <AllocationSystem.hpp>
-#include <GenericHandle.hpp>
-#include <RenderManager.hpp>
 
 using namespace puggo;
 
@@ -38,7 +36,7 @@ int main() {
     ptr1->i = 5;
     ptr1->x = 6.f;
     ptr1->y = 7.f;
-    ptr1->z = 8.f;
+	ptr1->z = 8.f;
 
     obj1.data[303] = 100.f;
 
