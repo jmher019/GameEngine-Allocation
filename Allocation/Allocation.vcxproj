@@ -79,7 +79,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\Debug\* $(ProjectDir)..\dist\lib\x86\Debug</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x86
+mkdir $(ProjectDir)..\dist\lib\x86\Debug
+copy $(ProjectDir)..\Debug\* $(ProjectDir)..\dist\lib\x86\Debug</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -91,7 +95,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\x64\Debug\* $(ProjectDir)..\dist\lib\x64\Debug</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x64
+mkdir $(ProjectDir)..\dist\lib\x64\Debug
+copy $(ProjectDir)..\x64\Debug\* $(ProjectDir)..\dist\lib\x64\Debug</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,7 +117,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\Release\* $(ProjectDir)..\dist\lib\x86\Release</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x86
+mkdir $(ProjectDir)..\dist\lib\x86\Release
+copy $(ProjectDir)..\Release\* $(ProjectDir)..\dist\lib\x86\Release</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,7 +139,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)..\x64\Release\* $(ProjectDir)..\dist\lib\x64\Release</Command>
+      <Command>mkdir $(ProjectDir)..\dist
+mkdir $(ProjectDir)..\dist\lib
+mkdir $(ProjectDir)..\dist\lib\x64
+mkdir $(ProjectDir)..\dist\lib\x64\Release
+copy $(ProjectDir)..\x64\Release\* $(ProjectDir)..\dist\lib\x64\Release</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
