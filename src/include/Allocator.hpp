@@ -108,8 +108,6 @@ namespace puggo {
 
 		return adjustment;
 	}
-
-#include <Allocator.inl>
 }
 
 #endif // !PUGGO_ALLOCATOR_HPP

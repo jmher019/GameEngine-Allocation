@@ -36,24 +36,6 @@
     <ClInclude Include="..\src\include\AllocationSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\GenericHandle.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\IRenderManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\RenderManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\RenderSystem.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\ISystem.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\GenericComponentAllocator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\sources\main.cpp">
@@ -80,19 +62,5 @@
     <ClCompile Include="..\src\sources\AllocationSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\sources\RenderSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\include\Allocator.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="..\src\include\RenderManager.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="..\src\include\GenericComponentAllocator.inl">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
 </Project>
