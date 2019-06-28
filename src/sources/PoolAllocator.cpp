@@ -34,17 +34,16 @@ PoolAllocator::~PoolAllocator(void) {
     freeList = nullptr;
 }
 
-void* PoolAllocator::allocate(const size_t& size, const unsigned char& alignment) {
-    assert(size == objectSize && alignment == objectAlignment);
-    if (freeList == nullptr) {
-        return nullptr;
+Result<void*, nullptr_t> PoolAllocator::allocate(const size_t& size, const unsigned char& alignment) {
+    if (freeList == nullptr || size != objectSize || alignment != objectAlignment) {
+        return Result<void*, nullptr_t>::error(nullptr);
     }
 
     void* p = freeList;
     freeList = (void**)(*freeList);
     usedMemory += size;
     numAllocations++;
-    return p;
+    return Result<void*, nullptr_t>::ok(p);
 }
 
 void PoolAllocator::deallocate(void* p) {

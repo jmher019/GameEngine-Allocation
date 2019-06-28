@@ -17,7 +17,7 @@ namespace puggo {
 
         LinearAllocator& operator=(const LinearAllocator&) = delete;
         LinearAllocator& operator=(LinearAllocator&&) = delete;
-        void* allocate(const size_t& size, const unsigned char& alignment) override;
+        Result<void*, nullptr_t> allocate(const size_t& size, const unsigned char& alignment) override;
         void deallocate(void* p) override;
         void clear(void);
 

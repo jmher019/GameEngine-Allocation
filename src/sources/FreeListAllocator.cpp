@@ -22,8 +22,10 @@ FreeListAllocator::~FreeListAllocator(void) {
     freeBlocks = nullptr;
 }
 
-void* FreeListAllocator::allocate(const size_t& size, const unsigned char& alignment) {
-    assert(size != 0 && alignment != 0);
+Result<void*, nullptr_t> FreeListAllocator::allocate(const size_t& size, const unsigned char& alignment) {
+	if (size == 0 || alignment == 0) {
+		return Result<void*, nullptr_t>::error(nullptr);
+	}
 
     FreeBlock* prevFreeBlock = nullptr;
     FreeBlock* freeBlock = freeBlocks;
@@ -76,12 +78,14 @@ void* FreeListAllocator::allocate(const size_t& size, const unsigned char& align
         usedMemory += totalSize;
         numAllocations++;
 
-        assert(alignForwardAdjustment((void*)alignedAddress, alignment) == 0);
+		if (alignForwardAdjustment((void*)alignedAddress, alignment) != 0) {
+			return Result<void*, nullptr_t>::error(nullptr);
+		}
 
-        return (void*)alignedAddress;
+		return Result<void*, nullptr_t>::ok((void*)alignedAddress);
     }
 
-    return nullptr;
+	return Result<void*, nullptr_t>::error(nullptr);
 }
 
 void FreeListAllocator::deallocate(void* p) {

@@ -39,7 +39,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -149,6 +149,7 @@ copy $(ProjectDir)..\x64\Release\Allocation.lib $(ProjectDir)..\dist\lib\x64\Rel
     <ClInclude Include="..\src\include\LinearAllocator.hpp" />
     <ClInclude Include="..\src\include\PoolAllocator.hpp" />
     <ClInclude Include="..\src\include\ProxyAllocator.hpp" />
+    <ClInclude Include="..\src\include\Result.hpp" />
     <ClInclude Include="..\src\include\StackAllocator.hpp" />
   </ItemGroup>
   <ItemGroup>

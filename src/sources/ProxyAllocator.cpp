@@ -9,14 +9,24 @@ ProxyAllocator::ProxyAllocator(Allocator& allocator):
 
 ProxyAllocator::~ProxyAllocator(void) {}
 
-void* ProxyAllocator::allocate(const size_t& size, const unsigned char& alignment) {
-    assert(size != 0);
+Result<void*, nullptr_t> ProxyAllocator::allocate(const size_t& size, const unsigned char& alignment) {
+	if (size == 0) {
+		return Result<void*, nullptr_t>::error(nullptr);
+	}
+
+
     numAllocations++;
     size_t mem = allocator.getUsedMemory();
 
-    void* p = allocator.allocate(size, alignment);
-    usedMemory += allocator.getUsedMemory() - mem;
-    return p;
+	Result<void*, nullptr_t> result = Result<void*, nullptr_t>::error(nullptr);
+	allocator
+		.allocate(size, alignment)
+		.map([&result](void* p) {
+			result = Result<void*, nullptr_t>::ok(p);
+		});
+
+	usedMemory += allocator.getUsedMemory() - mem;
+    return result;
 }
 
 void ProxyAllocator::deallocate(void* p) {

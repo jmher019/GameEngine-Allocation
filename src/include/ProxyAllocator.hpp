@@ -14,7 +14,7 @@ namespace puggo {
         ProxyAllocator& operator=(const ProxyAllocator&) = delete;
         ProxyAllocator& operator=(ProxyAllocator&&) = delete;
 
-        void* allocate(const size_t& size, const unsigned char& alignment) override;
+		Result<void*, nullptr_t> allocate(const size_t& size, const unsigned char& alignment) override;
         void deallocate(void* p) override;
 
     private:

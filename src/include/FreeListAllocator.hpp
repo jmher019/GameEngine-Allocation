@@ -18,7 +18,7 @@ namespace puggo {
         FreeListAllocator& operator=(const FreeListAllocator&) = delete;
         FreeListAllocator& operator=(FreeListAllocator&&) = delete;
 
-        void* allocate(const size_t& size, const unsigned char& alignment) override;
+        Result<void*, nullptr_t> allocate(const size_t& size, const unsigned char& alignment) override;
         void deallocate(void* p) override;
 
     private:

@@ -3,6 +3,8 @@
 
 #include <assert.h>
 
+#include <Result.hpp>
+
 namespace puggo {
     class Allocator {
     public:
@@ -10,9 +12,9 @@ namespace puggo {
 
         virtual ~Allocator(void);
 
-        virtual void* allocate(const size_t& size, const unsigned char& alignment = 4) = 0;
+        virtual Result<void*, nullptr_t> allocate(const size_t& size, const unsigned char& alignment = 4) = 0;
         virtual void deallocate(void* p) = 0;
-        void* getStart(void) const;
+		void* getStart(void) const;
         size_t getSize(void) const;
         size_t getUsedMemory(void) const;
         size_t getNumAllocations(void) const;
@@ -25,13 +27,27 @@ namespace puggo {
     };
 
     template <typename T>
-	inline T* allocateNew(Allocator& allocator) {
-		return new (allocator.allocate(sizeof(T), alignof(T))) T;
+	inline Result<T*, nullptr_t> allocateNew(Allocator& allocator) {
+		Result<T*, nullptr_t> result = Result<T*, nullptr_t>::error(nullptr);
+		allocator
+			.allocate(sizeof(T), alignof(T))
+			.map([&result] (void* ptr) {
+				result = Result<T*, nullptr_t>::ok(new(ptr) T);
+			});
+
+		return result;
 	}
 
     template <typename T>
-	inline T* allocateNew(Allocator& allocator, const T& t) {
-		return new (allocator.allocate(sizeof(T), alignof(T))) T(t);
+	inline Result<T*, nullptr_t> allocateNew(Allocator& allocator, const T& t) {
+		Result<T*, nullptr_t> result = Result<T*, nullptr_t>::error(nullptr);
+		allocator
+			.allocate(sizeof(T), alignof(T))
+			.map([&result](void* ptr) {
+				result = Result<T*, nullptr_t>::ok(new(ptr) T(t));
+			});
+
+		return result;
 	}
 
     template <typename T>
@@ -41,8 +57,11 @@ namespace puggo {
 	}
 
     template <typename T>
-	inline T* allocateArray(Allocator& allocator, size_t length) {
-		assert(length != 0);
+	inline Result<T*, nullptr_t> allocateArray(Allocator& allocator, size_t length) {
+		if (length == 0) {
+			return Result<T*, nullptr_t>::error(nullptr);
+		}
+
 		unsigned char headerSize = sizeof(size_t) / sizeof(T);
 
 		if (sizeof(size_t) % sizeof(T) > 0) {
@@ -50,14 +69,20 @@ namespace puggo {
 		}
 
 		// Allocate extra space to store array length in the bytes before the array
-		T* p = ((T*)allocator.allocate(sizeof(T) * (length + headerSize), alignof(T))) + headerSize;
-		*(((size_t*)p) - 1) = length;
+		Result<T*, nullptr_t> result = Result<T*, nullptr_t>::error(nullptr);
+		allocator.allocate(sizeof(T) * (length + headerSize), alignof(T))
+			.map([&result, &headerSize, &length] (void*ptr) {
+				T* p = ((T*)ptr) + headerSize;
+				*(((size_t*)p) - 1) = length;
 
-		for (size_t i = 0; i < length; i++) {
-			new (&p) T;
-		}
+				for (size_t i = 0; i < length; i++) {
+					new (&p) T;
+				}
 
-		return p;
+				result = Result<T*, nullptr_t>::ok(p);
+			});
+
+		return result;
 	}
 
     template <typename T>
