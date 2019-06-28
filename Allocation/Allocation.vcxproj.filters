@@ -36,6 +36,9 @@
     <ClInclude Include="..\src\include\AllocationSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\include\Result.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\sources\main.cpp">

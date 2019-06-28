@@ -30,12 +30,15 @@ StackAllocator::~StackAllocator(void) {
     currentPos = nullptr;
 }
 
-void* StackAllocator::allocate(const size_t& size, const unsigned char& alignment) {
-    assert(size != 0 && alignment != 0);
+Result<void*, nullptr_t> StackAllocator::allocate(const size_t& size, const unsigned char& alignment) {
+	if (size == 0 || alignment == 0) {
+		return Result<void*, nullptr_t>::error(nullptr);
+	}
+
     unsigned char adjustment = alignForwardAdjustmentWithHeader(currentPos, alignment, sizeof(AllocationHeader));
 
     if (usedMemory + adjustment + size > this->size) {
-        return nullptr;
+        return Result<void*, nullptr_t>::error(nullptr);
     }
 
     void* alignedAddress = (void*)((unsigned char*)currentPos + adjustment);
@@ -53,7 +56,7 @@ void* StackAllocator::allocate(const size_t& size, const unsigned char& alignmen
     usedMemory += size + adjustment;
     numAllocations++;
 
-    return alignedAddress;
+	return Result<void*, nullptr_t>::ok(alignedAddress);
 }
 
 void StackAllocator::deallocate(void* p) {

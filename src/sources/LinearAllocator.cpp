@@ -19,12 +19,15 @@ LinearAllocator::~LinearAllocator(void) {
     currentPos = nullptr;
 }
 
-void * LinearAllocator::allocate(const size_t& size, const unsigned char& alignment) {
-    assert(size != 0 && alignment != 0);
-    unsigned char adjustment = alignForwardAdjustment(currentPos, alignment);
+Result<void*, nullptr_t> LinearAllocator::allocate(const size_t& size, const unsigned char& alignment) {
+	if (size == 0 || alignment == 0) {
+		return Result<void*, nullptr_t>::error(nullptr);
+	}
+	
+	unsigned char adjustment = alignForwardAdjustment(currentPos, alignment);
 
     if (usedMemory + adjustment + size > this->size) {
-        return nullptr;
+		return Result<void*, nullptr_t>::error(nullptr);
     }
 
     unsigned char* alignedAddress = (unsigned char*)currentPos + adjustment;
@@ -32,7 +35,7 @@ void * LinearAllocator::allocate(const size_t& size, const unsigned char& alignm
     usedMemory += size + adjustment;
     numAllocations++;
 
-    return (void*)alignedAddress;
+	return Result<void*, nullptr_t>::ok((void*)alignedAddress);
 }
 
 void LinearAllocator::deallocate(void* p) {

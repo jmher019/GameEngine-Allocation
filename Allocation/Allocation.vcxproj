@@ -83,7 +83,6 @@
 md $(ProjectDir)..\dist\lib\x86\Debug
 )
 copy $(ProjectDir)..\Debug\Allocation.lib $(ProjectDir)..\dist\lib\x86\Debug</Command>
-
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,7 +119,6 @@ copy $(ProjectDir)..\x64\Debug\Allocation.lib $(ProjectDir)..\dist\lib\x64\Debug
 md $(ProjectDir)..\dist\lib\x86\Release
 )
 copy $(ProjectDir)..\Release\Allocation.lib $(ProjectDir)..\dist\lib\x86\Release</Command>
-
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,7 +140,6 @@ copy $(ProjectDir)..\Release\Allocation.lib $(ProjectDir)..\dist\lib\x86\Release
 md $(ProjectDir)..\dist\lib\x64\Release
 )
 copy $(ProjectDir)..\x64\Release\Allocation.lib $(ProjectDir)..\dist\lib\x64\Release</Command>
-
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -152,6 +149,7 @@ copy $(ProjectDir)..\x64\Release\Allocation.lib $(ProjectDir)..\dist\lib\x64\Rel
     <ClInclude Include="..\src\include\LinearAllocator.hpp" />
     <ClInclude Include="..\src\include\PoolAllocator.hpp" />
     <ClInclude Include="..\src\include\ProxyAllocator.hpp" />
+    <ClInclude Include="..\src\include\Result.hpp" />
     <ClInclude Include="..\src\include\StackAllocator.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -38,7 +38,7 @@ namespace puggo {
 #else
         static void init(unsigned long long size, size_t sizePerAllocator = static_cast<size_t>(AllocationSystem::ONE_GIGABYTE));
 #endif // _WIN64
-        static void* requestMemoryFromSystem(size_t size);
+        static Result<void*, nullptr_t> requestMemoryFromSystem(size_t size);
 
     private:
         AllocationSystem(void);
@@ -47,7 +47,7 @@ namespace puggo {
         AllocationSystem& operator=(AllocationSystem&& system) noexcept;
         void initMemory(unsigned long long size, size_t sizePerAllocator);
         void freeAllMemory(void);
-        void* requestMemory(size_t size);
+        Result<void*, nullptr_t> requestMemory(size_t size);
 
         vector<LinearAllocator> masterAllocators;
         vector<void*> dataArr;

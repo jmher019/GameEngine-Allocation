@@ -43,12 +43,14 @@ void AllocationSystem::init(unsigned long long size, size_t sizePerAllocator) {
     AllocationSystem::system = AllocationSystem(size, sizePerAllocator);
 }
 
-void* AllocationSystem::requestMemoryFromSystem(size_t size) {
+Result<void*, nullptr_t> AllocationSystem::requestMemoryFromSystem(size_t size) {
     return AllocationSystem::system.requestMemory(size);
 }
 
-void* AllocationSystem::requestMemory(size_t size) {
-    assert(size <= static_cast<size_t>(AllocationSystem::TWO_GIGABYTE));
+Result<void*, nullptr_t> AllocationSystem::requestMemory(size_t size) {
+	if (size > AllocationSystem::TWO_GIGABYTE) {
+		return Result<void*, nullptr_t>::error(nullptr);
+	}
 
     int indexOfAllocator = -1;
     for (size_t i = 0; i < masterAllocators.size(); i++) {
@@ -60,7 +62,7 @@ void* AllocationSystem::requestMemory(size_t size) {
     }
 
     if (indexOfAllocator == -1) {
-        return nullptr;
+		return Result<void*, nullptr_t>::error(nullptr);
     }
 
     return masterAllocators[indexOfAllocator].allocate(size, 1);
