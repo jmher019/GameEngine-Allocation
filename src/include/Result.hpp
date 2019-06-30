@@ -54,14 +54,7 @@ namespace puggo {
 		}
 
 		Result<Left, Right>& matchWith(function<void(Left)> okLambda, function<void(Right)> errorLambda) {
-			if (isError) {
-				okLambda(left);
-			}
-			else {
-				errorLambda(right);
-			}
-
-			return *this;
+			return map(okLambda).mapError(errorLambda);
 		}
 
 		static Result<Left, Right> ok(const Left& left) noexcept {
